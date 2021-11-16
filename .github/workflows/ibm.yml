@@ -1,4 +1,4 @@
-# This workflow will build a docker container, publish it to IBM Container Registry, and deploy it to IKS when a release is created
+# This workflow will build a docker container, publish it to IBM Container Registry, and deploy it to IKS when there is a push to the master branch.
 #
 # To configure this workflow:
 #
@@ -8,12 +8,10 @@
 
 name: Build and Deploy to IKS
 
-#on:
-#  release:
-#    types: [created]
-
-on: [push]
-
+on:
+  push:
+    branches:
+      - master
 
 # Environment variables available to all jobs and steps in this workflow
 env:
@@ -31,6 +29,7 @@ jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
+    environment: production
     steps:
 
     - name: Checkout
@@ -75,3 +74,5 @@ jobs:
         kubectl create service loadbalancer $DEPLOYMENT_NAME --tcp=80:$PORT --dry-run -o yaml > service.yaml
         kubectl apply -f service.yaml
         kubectl get services -o wide
+
+
